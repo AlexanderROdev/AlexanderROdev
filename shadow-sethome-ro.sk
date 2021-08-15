@@ -1,0 +1,120 @@
+options:
+	tag: <white>[<cyan>Casa Shadow<white>]<white>
+		
+command /sethome <text> [<text>]:
+	usage: /sethome <name>
+	description: Seteaza-ti casa
+	permission: shadow.seteazacasa
+	trigger:
+		if arg 2 is set:
+			message "{@tag} Ai introdus mai mult de un cuvant pentru casa ta!"
+			message "{@tag} Acest lucru nu este permis!"
+			stop
+		if {sethomes} is 3:
+			player does not have permission "shadow.6case":
+				player does not have permission "shadow.caseplus":
+					message "{@tag} Tu nu iti poti seta mai mult de 3 case."
+					stop
+		if {sethomes} is 6:
+			player does not have permission "shadow.caseplus":
+				message "{@tag} Tu nu poti seta mai mult de 6 case."
+				stop
+		if {sethomes} is not set:
+			set {sethomes} to 0
+		set {%player%.x} to x coord of player
+		set {%player%.y} to y coord of player
+		set {%player%.z} to z coord of player
+		set yaml value "homes.%player%.%arg 1%.x" from file "Test/sethomes.yml" to "%{%player%.x}%" 
+		set yaml value "homes.%player%.%arg 1%.y" from file "Test/sethomes.yml" to "%{%player%.y}%" 
+		set yaml value "homes.%player%.%arg 1%.z" from file "Test/sethomes.yml" to "%{%player%.z}%" 
+		message "{@tag} Ti-ai setat casa <cyan>%arg 1%<white> la <cyan>%location%"
+		set yaml value "homes.%player%.%arg 1%.active" from file "Test/sethomes.yml" to "true"
+		set {home.%player%::%arg 1%} to location of player
+		set {homename.%player%::%arg 1%} to arg 1
+		set {sethome.%player%} to true
+		
+		
+		
+command /delhome <text> [<text>]:
+	usage: /delhome <name> 
+	description: Sterge o casa
+	permission: shadow.stergecasa
+	trigger:
+		if arg 2 is set:
+			message "{@tag} Ai introdus mai mult de un cuvant pentru casa ta!"
+			message "{@tag} Acest lucru nu este permis!"
+			stop
+		if {home.%player%::%arg 1%} is set:
+			set yaml value "homes.%player%.%arg 1%.active" from file "Test/sethomes.yml" to "false"
+			delete {home.%player%::%arg 1%}
+			delete {homename.%player%::%arg 1%} 
+			message "{@tag} Ti-ai sters casa <cyan>%arg 1%"
+			remove 1 from {sethomes}
+			stop
+		message "{@tag} Nu am gasit aceasta casa!"
+		
+command /home <text=abcdefghijklmnopqrstuvwxyz> [<text>]:
+	usage: /home <name>
+	description: Teleporteaza-te la casa ta
+	permission: shadow.casa
+	trigger:
+		if arg 2 is set:
+			message "{@tag} Ai introdus mai mult de un cuvant pentru casa ta!"
+			message "{@tag} Acest lucru nu este permis!"
+			stop
+		if arg 1 is "abcdefghijklmnopqrstuvwxyz":
+			message "{@tag} Acestea sunt casele tale"
+			message "{@tag} %{homename.%player%::*}%"
+			stop
+		if {home.%player%::%arg 1%} is set:
+			teleport player to {home.%player%::%arg 1%}
+			message "{@tag} Ai fost teleportat la casa <cyan>%arg 1%"
+		
+		
+		
+		
+on command:
+	if {test.loaded} is not set:
+		set {test.loaded} to true
+		set yaml value "homes" from file "Test/sethomes.yml" to ""		
+		
+		
+		
+command /adminhome:
+	permission: shadow.casaadmin
+	trigger:
+		message "{@tag} Introdu numele persoanei in chat pentru a ii verifica casele iar dupa pentru a te teleporta la o casa."
+		set {shadow.adminchat.%player%} to true
+		
+on chat:
+	if {shadow.adminchat.%player%} is true:
+		cancel the event
+		message "{@tag} Tu ai introdus %message%. Verificam daca este numele unui jucator"
+		if {sethome.%message%} is true:
+			message "{@tag} Am detectat numele unui jucator"
+			message "{@tag} Casale lui sunt: "
+			message "{@tag} <cyan>%{homename.%message%::*}%<white>"
+			set {shadow.%player%.name} to "%message%"
+			set {shadow.admintp.%player%} to true
+			message "{@tag} Acum introdu numele unei case la care vrei sa te teleportezi"
+			set {shadow.adminchat.%player%} to false
+			stop
+		message "{@tag} Nu exista aceasta casa sau nu ai scris corect"
+	if {shadow.admintp.%player%} is true:
+		cancel the event
+		message "{@tag} Ai introdus %message%. Verificam daca este numele unei case!"
+		if {home.%{shadow.%player%.name}%::%message%} is set:
+			message "{@tag} Numele casei a fost introdus corect!"
+			message "{@tag} Teleporteaza..."
+			teleport player to {home.%{shadow.%player%.name}%::%message%}
+			set {shadow.admintp.%player%} to false
+			stop
+		message "{@tag} Casa invalida.Teleportare anulata."
+
+
+
+		
+		
+		
+		
+		#set yaml value "" from file "" to ""
