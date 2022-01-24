@@ -1,7 +1,7 @@
 - 👋 Hi, I’m @AlexanderROdev
 - 👀 I’m interested in Minecraft Spigot
 - 🌱 I’m currently learning java
-- 📫 Disord: Doru Dezvoltatoru'#7281
+- 📫 Disord: dev.Alexandru#1337
 
 <!---
 AlexanderROdev/AlexanderROdev is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
